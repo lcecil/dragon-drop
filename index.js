@@ -133,7 +133,7 @@ export default class DragonDrop {
     this
       .initElements(container)
       .mouseEvents()
-      .initClick();
+      .initGrab();
 
     debug('dragon initialized: ', this);
 
@@ -158,11 +158,11 @@ export default class DragonDrop {
     return this;
   }
 
-  initClick() {
+  initGrab() {
     const { activeClass, inactiveClass, nested} = this.options;
 
     this.handles.forEach(handle => {
-      handle.addEventListener('click', e => {
+      handle.addEventListener('grab', e => {
         if (nested) { e.stopPropagation(); }
         const wasPressed = handle.getAttribute('data-drag-on') === 'true';
         const type = wasPressed ? 'dropped' : 'grabbed';
@@ -242,6 +242,7 @@ export default class DragonDrop {
   onKeydown(e) {
     const { nested } = this.options;
     const { target, which } = e;
+    const event = new Event('grab');
     const isDrag = () => target.getAttribute('data-drag-on') === 'true';
 
     switch (which) {
@@ -249,7 +250,7 @@ export default class DragonDrop {
       case 32:
         if (nested) { e.stopPropagation(); }
         e.preventDefault();
-        target.click();
+        target.dispatchEvent(event);
 
         break;
       case 37:
@@ -264,13 +265,13 @@ export default class DragonDrop {
         break;
       case 9:
         if (isDrag()) {
-          target.click();
+          target.dispatchEvent(event);
         }
 
         break;
       case 27:
         if (isDrag()) {
-          target.click();
+          target.dispatchEvent(event);
           this.cancel();
         }
     }
