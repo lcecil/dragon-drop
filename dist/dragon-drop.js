@@ -183,7 +183,7 @@ var DragonDrop = function () {
     this.onKeydown = this.onKeydown.bind(this);
 
     // initialize elements / events
-    this.initElements(container).mouseEvents().initClick();
+    this.initElements(container).mouseEvents().initGrab();
 
     debug('dragon initialized: ', this);
 
@@ -207,8 +207,8 @@ var DragonDrop = function () {
       return this;
     }
   }, {
-    key: 'initClick',
-    value: function initClick() {
+    key: 'initGrab',
+    value: function initGrab() {
       var _this = this;
 
       var _options2 = this.options,
@@ -218,7 +218,7 @@ var DragonDrop = function () {
 
 
       this.handles.forEach(function (handle) {
-        handle.addEventListener('click', function (e) {
+        handle.addEventListener('grab', function (e) {
           if (nested) {
             e.stopPropagation();
           }
@@ -308,6 +308,7 @@ var DragonDrop = function () {
       var target = e.target,
           which = e.which;
 
+      var event = new Event('grab');
       var isDrag = function isDrag() {
         return target.getAttribute('data-drag-on') === 'true';
       };
@@ -319,7 +320,7 @@ var DragonDrop = function () {
             e.stopPropagation();
           }
           e.preventDefault();
-          target.click();
+          target.dispatchEvent(event);
 
           break;
         case 37:
@@ -334,13 +335,13 @@ var DragonDrop = function () {
           break;
         case 9:
           if (isDrag()) {
-            target.click();
+            target.dispatchEvent(event);
           }
 
           break;
         case 27:
           if (isDrag()) {
-            target.click();
+            target.dispatchEvent(event);
             this.cancel();
           }
       }
